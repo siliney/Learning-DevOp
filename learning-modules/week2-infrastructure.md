@@ -1,4 +1,4 @@
-# Week 3-4: Infrastructure as Code & AWS Services
+# Week 2: Infrastructure as Code & AWS Services
 
 ## Learning Objectives
 - Master Terraform fundamentals

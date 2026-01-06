@@ -1,4 +1,4 @@
-# Week 7-8: Monitoring, Security & Production
+# Week 4: Production, Monitoring & Security
 
 ## Learning Objectives
 - Implement comprehensive monitoring

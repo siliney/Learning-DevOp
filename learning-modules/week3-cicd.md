@@ -1,4 +1,4 @@
-# Week 5-6: CI/CD Pipelines & Automation
+# Week 3: CI/CD Pipelines & Automation
 
 ## Learning Objectives
 - Build automated CI/CD pipelines

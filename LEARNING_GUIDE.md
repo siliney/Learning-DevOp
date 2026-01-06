@@ -6,7 +6,7 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 
 ## 📅 Learning Timeline
 
-### Phase 1: Foundations (Weeks 1-2)
+### Week 1: Foundations
 **Focus**: Core concepts and environment setup
 - Cloud computing fundamentals
 - Linux command line mastery
@@ -14,7 +14,7 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 - AWS basics and networking
 - **Outcome**: Solid foundation for advanced topics
 
-### Phase 2: Infrastructure (Weeks 3-4)
+### Week 2: Infrastructure
 **Focus**: Infrastructure as Code and containerization
 - Terraform for AWS infrastructure
 - Docker containerization
@@ -22,7 +22,7 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 - AWS services deep dive
 - **Outcome**: Deploy scalable infrastructure programmatically
 
-### Phase 3: Automation (Weeks 5-6)
+### Week 3: CI/CD & Automation
 **Focus**: CI/CD pipelines and deployment automation
 - GitHub Actions workflows
 - Automated testing strategies
@@ -30,7 +30,7 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 - GitOps principles
 - **Outcome**: Fully automated deployment pipelines
 
-### Phase 4: Production (Weeks 7-8)
+### Week 4: Production & Operations
 **Focus**: Monitoring, security, and operational excellence
 - Comprehensive monitoring with CloudWatch
 - Security best practices and compliance
@@ -74,24 +74,24 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 - Reflect on learnings
 
 ### Monthly Milestones
-- **Month 1**: Deploy basic infrastructure
-- **Month 2**: Build automated pipelines
-- **Month 3**: Implement monitoring and security
-- **Month 4**: Complete capstone project
+- **Week 1**: Deploy basic infrastructure
+- **Week 2**: Build containerized applications
+- **Week 3**: Implement automated pipelines
+- **Week 4**: Complete production deployment
 
 ## 🎓 Certification Roadmap
 
 ### Beginner Level
-- **AWS Cloud Practitioner** (Month 1)
-- **Docker Certified Associate** (Month 2)
+- **AWS Cloud Practitioner** (Week 1)
+- **Docker Certified Associate** (Week 2)
 
 ### Intermediate Level
-- **AWS Solutions Architect Associate** (Month 3)
-- **Kubernetes CKA** (Month 4)
+- **AWS Solutions Architect Associate** (Week 3)
+- **Kubernetes CKA** (Week 4)
 
 ### Advanced Level
-- **AWS DevOps Engineer Professional** (Month 6)
-- **Kubernetes CKAD** (Month 6)
+- **AWS DevOps Engineer Professional** (After completion)
+- **Kubernetes CKAD** (After completion)
 
 ## 📚 Learning Resources
 
@@ -172,10 +172,10 @@ This guide provides a structured, hands-on approach to mastering Cloud DevOps wi
 
 ## 🚀 Getting Started
 
-1. **Week 1**: Start with [Foundations](./learning-modules/week1-2-foundations.md)
+1. **Week 1**: Start with [Foundations](./learning-modules/week1-foundations.md)
 2. **Set up environment**: Run `./scripts/setup-environment.sh`
 3. **Join community**: Connect with other learners
 4. **Track progress**: Update checkboxes as you complete tasks
 5. **Build portfolio**: Document your journey on GitHub
 
-Remember: Consistency beats intensity. Dedicate 2-3 hours daily and you'll see significant progress in 8 weeks!
+Remember: Consistency beats intensity. Dedicate 2-3 hours daily and you'll see significant progress in 4 weeks!

@@ -1,4 +1,4 @@
-# Week 1-2: Cloud Foundations
+# Week 1: Cloud Foundations
 
 ## Learning Objectives
 - Understand cloud computing models (IaaS, PaaS, SaaS)

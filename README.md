@@ -12,38 +12,42 @@ A comprehensive, hands-on learning path for Cloud DevOps engineering with practi
 
 ## 📋 Learning Path
 
-### 📚 [Phase 1: Foundations (Weeks 1-2)](./learning-modules/week1-2-foundations.md)
+### 📚 [Week 1: Foundations](./learning-modules/week1-foundations.md)
 - ☐ Cloud Computing Basics
 - ☐ Linux Command Line
 - ☐ Git & Version Control
 - ☐ Networking Fundamentals
+- ☐ AWS Core Services
 
-### 🏗️ [Phase 2: Infrastructure (Weeks 3-4)](./learning-modules/week3-4-infrastructure.md)
+### 🏗️ [Week 2: Infrastructure](./learning-modules/week2-infrastructure.md)
 - ☐ Infrastructure as Code (Terraform)
 - ☐ AWS Core Services
 - ☐ Docker Containerization
 - ☐ Kubernetes Basics
+- ☐ Infrastructure Automation
 
-### 🔄 [Phase 3: CI/CD (Weeks 5-6)](./learning-modules/week5-6-cicd.md)
+### 🔄 [Week 3: CI/CD](./learning-modules/week3-cicd.md)
 - ☐ GitHub Actions
-- ☐ Jenkins Pipeline
-- ☐ Automated Testing
+- ☐ Advanced Pipelines
 - ☐ Deployment Strategies
+- ☐ GitOps Workflows
+- ☐ Monitoring Integration
 
-### 📊 [Phase 4: Monitoring & Security (Weeks 7-8)](./learning-modules/week7-8-monitoring.md)
-- ☐ CloudWatch & Logging
-- ☐ Security Best Practices
+### 📊 [Week 4: Production](./learning-modules/week4-production.md)
+- ☐ Advanced Monitoring
+- ☐ Security Implementation
 - ☐ Cost Optimization
-- ☐ Incident Response
+- ☐ Disaster Recovery
+- ☐ Production Readiness
 
 ## 🛠️ Practical Projects
 
-| Project | Technology Stack | Difficulty | Status |
-|---------|------------------|------------|--------|
-| [Static Website](./projects/01-static-website/) | S3, CloudFront, Route53 | Beginner | ☐ |
-| [Containerized App](./projects/02-containerized-app/) | Docker, ECS/EKS, ALB | Intermediate | ☐ |
-| [CI/CD Pipeline](./projects/03-cicd-pipeline/) | GitHub Actions, Terraform | Intermediate | ☐ |
-| [Infrastructure Automation](./projects/04-infrastructure-automation/) | Terraform, Multi-env | Advanced | ☐ |
+| Project | Technology Stack | Difficulty | Week |
+|---------|------------------|------------|------|
+| [Static Website](./projects/01-static-website/) | S3, CloudFront, Route53 | Beginner | Week 1 |
+| [Containerized App](./projects/02-containerized-app/) | Docker, ECS/EKS, ALB | Intermediate | Week 2 |
+| [CI/CD Pipeline](./projects/03-cicd-pipeline/) | GitHub Actions, Terraform | Intermediate | Week 3 |
+| [Production Infrastructure](./projects/04-production-infrastructure/) | Multi-region, Monitoring, Security | Advanced | Week 4 |
 
 ## 🚀 Quick Start
 
