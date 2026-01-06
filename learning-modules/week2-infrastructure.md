@@ -1380,6 +1380,98 @@ jobs:
 - [ ] Deploy EKS cluster using modules
 - [ ] Configure CloudWatch monitoring and alerts
 
+## 🔧 Troubleshooting Guide
+
+### Common Issues & Solutions
+
+#### Terraform Issues
+**Problem**: Provider authentication errors
+**Solution**:
+```bash
+# Configure AWS credentials
+aws configure
+# Or use environment variables
+export AWS_ACCESS_KEY_ID="your-key"
+export AWS_SECRET_ACCESS_KEY="your-secret"
+```
+
+**Problem**: State lock errors
+**Solution**:
+```bash
+# Force unlock (use carefully)
+terraform force-unlock LOCK_ID
+
+# Check DynamoDB table exists for locking
+aws dynamodb describe-table --table-name terraform-locks
+```
+
+#### Docker Issues
+**Problem**: Permission denied when running Docker
+**Solution**:
+```bash
+# Add user to docker group
+sudo usermod -aG docker $USER
+# Log out and back in, or run:
+newgrp docker
+```
+
+**Problem**: Container won't start
+**Solution**:
+```bash
+# Check container logs
+docker logs container-name
+
+# Run container interactively for debugging
+docker run -it image-name /bin/sh
+```
+
+#### Kubernetes Issues
+**Problem**: kubectl connection refused
+**Solution**:
+```bash
+# Check cluster status
+kubectl cluster-info
+
+# Update kubeconfig
+aws eks update-kubeconfig --region us-east-1 --name cluster-name
+
+# Verify context
+kubectl config current-context
+```
+
+**Problem**: Pods stuck in Pending state
+**Solution**:
+```bash
+# Check pod events
+kubectl describe pod pod-name
+
+# Check node resources
+kubectl top nodes
+
+# Check for resource constraints
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+## 📚 Additional Resources for Week 2
+
+### Essential Reading
+- **Terraform Best Practices**: https://www.terraform-best-practices.com/
+- **Docker Best Practices**: https://docs.docker.com/develop/best-practices/
+- **Kubernetes Concepts**: https://kubernetes.io/docs/concepts/
+- **AWS Well-Architected**: https://aws.amazon.com/architecture/well-architected/
+
+### Video Tutorials
+- **Terraform Deep Dive**: HashiCorp Learn
+- **Docker Mastery**: Bret Fisher's courses
+- **Kubernetes Tutorial**: TechWorld with Nana
+- **AWS Infrastructure**: A Cloud Guru
+
+### Hands-on Labs
+- **Terraform Workshops**: https://learn.hashicorp.com/terraform
+- **Docker Labs**: https://training.play-with-docker.com/
+- **Kubernetes Tutorials**: https://kubernetes.io/docs/tutorials/
+- **AWS Workshops**: https://workshops.aws/
+
 ## Hands-on Lab: Deploy 3-Tier Architecture
 
 ```hcl

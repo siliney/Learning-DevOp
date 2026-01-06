@@ -71,6 +71,14 @@ cd projects/01-static-website
 - Basic programming knowledge
 - Computer with internet access
 
+## 📚 Learning Resources
+
+- **[Additional Resources](./ADDITIONAL_RESOURCES.md)** - Comprehensive learning materials
+- **Books, Videos & Tutorials** - Curated learning content
+- **Hands-on Labs & Practice** - Interactive learning platforms
+- **Certifications & Career Path** - Professional development guide
+- **Communities & Tools** - Networking and essential tools
+
 ## 🎓 Certification Path
 
 1. ☐ AWS Cloud Practitioner

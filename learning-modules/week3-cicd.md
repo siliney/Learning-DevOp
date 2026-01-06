@@ -1839,6 +1839,98 @@ data:
 - [ ] Create custom Grafana dashboards
 - [ ] Set up alerting rules and notifications
 
+## 🔧 Troubleshooting Guide
+
+### Common Issues & Solutions
+
+#### GitHub Actions Issues
+**Problem**: Workflow not triggering
+**Solution**:
+```yaml
+# Check trigger conditions
+on:
+  push:
+    branches: [ main ]  # Ensure branch name matches
+  pull_request:
+    branches: [ main ]
+
+# Check file location: .github/workflows/filename.yml
+```
+
+**Problem**: Secrets not accessible
+**Solution**:
+- Verify secrets are set in repository settings
+- Check secret names match exactly (case-sensitive)
+- Ensure proper environment context if using environments
+
+#### Deployment Issues
+**Problem**: Blue-green deployment stuck
+**Solution**:
+```bash
+# Check rollout status
+kubectl argo rollouts get rollout app-name
+
+# Manual promotion if needed
+kubectl argo rollouts promote app-name
+
+# Abort rollout if issues
+kubectl argo rollouts abort app-name
+```
+
+**Problem**: ArgoCD sync failures
+**Solution**:
+```bash
+# Check application status
+argocd app get app-name
+
+# Force refresh
+argocd app sync app-name --force
+
+# Check for resource conflicts
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+#### Monitoring Issues
+**Problem**: Prometheus not scraping metrics
+**Solution**:
+```bash
+# Check ServiceMonitor configuration
+kubectl get servicemonitor
+
+# Verify service labels match ServiceMonitor selector
+kubectl describe servicemonitor app-metrics
+
+# Check Prometheus targets
+# Access Prometheus UI -> Status -> Targets
+```
+
+**Problem**: Grafana dashboard not showing data
+**Solution**:
+- Verify data source configuration
+- Check Prometheus query syntax
+- Ensure time range is appropriate
+- Verify metric names and labels
+
+## 📚 Additional Resources for Week 3
+
+### Essential Reading
+- **GitHub Actions Documentation**: https://docs.github.com/en/actions
+- **Argo Rollouts Guide**: https://argoproj.github.io/argo-rollouts/
+- **GitOps Principles**: https://www.gitops.tech/
+- **Prometheus Best Practices**: https://prometheus.io/docs/practices/
+
+### Video Tutorials
+- **CI/CD with GitHub Actions**: GitHub's official channel
+- **ArgoCD Tutorial**: CNCF YouTube
+- **Deployment Strategies**: TechWorld with Nana
+- **Monitoring with Prometheus**: Prometheus YouTube
+
+### Hands-on Labs
+- **GitHub Actions Lab**: https://lab.github.com/
+- **Argo Rollouts Workshop**: https://argoproj.github.io/argo-rollouts/
+- **Prometheus Tutorial**: https://prometheus.io/docs/tutorials/
+- **Grafana Tutorials**: https://grafana.com/tutorials/
+
 ## Hands-on Lab: Complete CI/CD Pipeline
 
 ```yaml

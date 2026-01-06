@@ -1648,6 +1648,130 @@ jobs:
 - [ ] Document operational procedures
 - [ ] Present final project demonstrating mastery
 
+## 🔧 Troubleshooting Guide
+
+### Common Issues & Solutions
+
+#### CloudWatch Issues
+**Problem**: Custom metrics not appearing
+**Solution**:
+```bash
+# Check metric namespace and dimensions
+aws cloudwatch list-metrics --namespace "MyApp/Custom"
+
+# Verify IAM permissions for PutMetricData
+# Check application logs for metric publishing errors
+```
+
+**Problem**: Alarms not triggering
+**Solution**:
+- Verify alarm threshold and comparison operator
+- Check evaluation periods and datapoints to alarm
+- Ensure SNS topic has valid subscriptions
+- Test SNS topic manually
+
+#### Security Issues
+**Problem**: IAM permission denied
+**Solution**:
+```bash
+# Check current user permissions
+aws sts get-caller-identity
+
+# Test specific permissions
+aws iam simulate-principal-policy \
+  --policy-source-arn arn:aws:iam::123456789012:user/username \
+  --action-names s3:GetObject \
+  --resource-arns arn:aws:s3:::bucket-name/*
+```
+
+**Problem**: Security group blocking access
+**Solution**:
+```bash
+# Check security group rules
+aws ec2 describe-security-groups --group-ids sg-12345678
+
+# Add temporary rule for debugging
+aws ec2 authorize-security-group-ingress \
+  --group-id sg-12345678 \
+  --protocol tcp \
+  --port 80 \
+  --cidr 0.0.0.0/0
+```
+
+#### Cost Optimization Issues
+**Problem**: Unexpected high costs
+**Solution**:
+```bash
+# Check cost breakdown
+aws ce get-cost-and-usage \
+  --time-period Start=2024-01-01,End=2024-01-31 \
+  --granularity MONTHLY \
+  --metrics BlendedCost \
+  --group-by Type=DIMENSION,Key=SERVICE
+
+# Find unused resources
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped"
+aws ec2 describe-volumes --filters "Name=status,Values=available"
+```
+
+#### Disaster Recovery Issues
+**Problem**: RDS snapshot restore fails
+**Solution**:
+```bash
+# Check snapshot status
+aws rds describe-db-snapshots --db-snapshot-identifier snapshot-id
+
+# Verify subnet group and security groups exist in target region
+# Ensure parameter group is compatible with target engine version
+```
+
+**Problem**: Cross-region replication not working
+**Solution**:
+- Verify IAM role has proper permissions
+- Check source and destination bucket policies
+- Ensure versioning is enabled on both buckets
+- Verify replication rule configuration
+
+## 📚 Additional Resources for Week 4
+
+### Essential Reading
+- **AWS Monitoring Best Practices**: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/
+- **Security Best Practices**: https://aws.amazon.com/architecture/security-identity-compliance/
+- **Cost Optimization**: https://aws.amazon.com/architecture/cost-optimization/
+- **Disaster Recovery**: https://aws.amazon.com/disaster-recovery/
+
+### Video Tutorials
+- **CloudWatch Deep Dive**: AWS re:Invent sessions
+- **AWS Security**: AWS Security YouTube channel
+- **Cost Optimization**: AWS Cost Optimization playlist
+- **Disaster Recovery**: AWS Architecture Center
+
+### Hands-on Labs
+- **CloudWatch Workshop**: https://cloudwatchworkshop.com/
+- **AWS Security Workshops**: https://awssecworkshops.com/
+- **Well-Architected Labs**: https://wellarchitectedlabs.com/
+- **Disaster Recovery Workshop**: AWS Workshops
+
+### Certification Preparation
+- **AWS Solutions Architect**: Practice exams and study guides
+- **AWS DevOps Engineer**: Professional certification path
+- **AWS Security Specialty**: Security-focused certification
+- **Kubernetes CKA/CKAD**: Container orchestration certifications
+
+## 🎯 Final Project Ideas
+
+### Portfolio Projects
+1. **Multi-tier Web Application** - Complete infrastructure with monitoring
+2. **Microservices Platform** - Container-based architecture with service mesh
+3. **Data Pipeline** - ETL workflow with monitoring and alerting
+4. **DevOps Toolchain** - Complete CI/CD platform with GitOps
+
+### Open Source Contributions
+- Contribute to Terraform providers
+- Submit Kubernetes improvements
+- Create Helm charts for popular applications
+- Write documentation for DevOps tools
+
 ## Certification Preparation
 - [ ] AWS Solutions Architect Associate
 - [ ] AWS DevOps Engineer Professional

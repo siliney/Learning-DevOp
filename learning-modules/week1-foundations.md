@@ -60,6 +60,76 @@ Cloud computing delivers computing services (servers, storage, databases, networ
 - [ ] Connect to instance via SSH
 - [ ] Explore AWS Console services
 
+## 🔧 Troubleshooting Guide
+
+### Common Issues & Solutions
+
+#### AWS Account Setup
+**Problem**: Credit card verification fails
+**Solution**: 
+- Use a valid credit card (debit cards may not work)
+- Ensure billing address matches card details
+- Contact AWS support if issues persist
+
+**Problem**: Can't access EC2 instance via SSH
+**Solution**:
+```bash
+# Check security group allows SSH (port 22)
+# Verify key pair permissions
+chmod 400 your-key.pem
+
+# Connect with correct username
+ssh -i your-key.pem ec2-user@your-instance-ip  # Amazon Linux
+ssh -i your-key.pem ubuntu@your-instance-ip    # Ubuntu
+```
+
+#### Linux Commands
+**Problem**: Permission denied errors
+**Solution**:
+```bash
+# Use sudo for administrative tasks
+sudo command
+
+# Check file permissions
+ls -la filename
+
+# Fix permissions
+chmod 755 script.sh  # Make executable
+```
+
+**Problem**: Command not found
+**Solution**:
+```bash
+# Check if command exists
+which command-name
+
+# Install missing packages (Ubuntu/Debian)
+sudo apt update && sudo apt install package-name
+
+# Install missing packages (Amazon Linux/CentOS)
+sudo yum install package-name
+```
+
+## 📚 Additional Resources for Week 1
+
+### Essential Reading
+- **AWS Free Tier Guide**: https://aws.amazon.com/free/
+- **Linux Command Line Basics**: https://linuxcommand.org/
+- **Git Tutorial**: https://git-scm.com/docs/gittutorial
+- **Networking Fundamentals**: https://www.cloudflare.com/learning/
+
+### Video Tutorials
+- **AWS Console Walkthrough**: AWS Training YouTube channel
+- **Linux for Beginners**: TechWorld with Nana
+- **Git and GitHub Tutorial**: freeCodeCamp
+- **Networking Basics**: NetworkChuck
+
+### Practice Labs
+- **AWS Free Tier Labs**: https://aws.amazon.com/getting-started/
+- **Linux Practice**: OverTheWire Bandit
+- **Git Practice**: https://learngitbranching.js.org/
+- **Networking Labs**: Packet Tracer (Cisco)
+
 ### Day 2: Linux Command Line Mastery
 
 #### Why Linux for DevOps?
