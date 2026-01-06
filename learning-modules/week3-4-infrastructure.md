@@ -660,17 +660,725 @@ docker-compose down           # Stop and remove services
 - [ ] Practice Docker networking and volumes
 - [ ] Create a docker-compose.yml for multi-service app
 
-### Day 4: Container Orchestration
-- [ ] Install kubectl and minikube
-- [ ] Learn Kubernetes pods, services, deployments
-- [ ] Practice: Deploy containerized app to K8s
-- [ ] Understand ConfigMaps and Secrets
+### Day 4: Kubernetes Fundamentals
 
-### Day 5: Infrastructure Automation
-- [ ] Create Terraform modules
-- [ ] Implement remote state with S3
-- [ ] Practice: Deploy EKS cluster
-- [ ] Set up monitoring with CloudWatch
+#### Why Kubernetes for DevOps?
+Kubernetes orchestrates containers at scale, providing automated deployment, scaling, and management. Essential for modern cloud-native applications.
+
+#### Kubernetes Core Concepts:
+- **Pod**: Smallest deployable unit (one or more containers)
+- **Service**: Network endpoint to access pods
+- **Deployment**: Manages pod replicas and updates
+- **Namespace**: Virtual cluster for resource isolation
+
+#### Installation and Setup:
+```bash
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install minikube for local development
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube /usr/local/bin/
+
+# Start minikube cluster
+minikube start --driver=docker
+kubectl cluster-info
+```
+
+#### Your First Pod:
+```yaml
+# pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+```
+
+```bash
+# Deploy and manage pods
+kubectl apply -f pod.yaml
+kubectl get pods
+kubectl describe pod nginx-pod
+kubectl logs nginx-pod
+kubectl exec -it nginx-pod -- /bin/sh
+kubectl delete pod nginx-pod
+```
+
+#### Deployments for Production:
+```yaml
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+#### Services for Networking:
+```yaml
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: LoadBalancer
+---
+# ClusterIP service (internal)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-internal
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+```
+
+#### ConfigMaps and Secrets:
+```yaml
+# configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  database_url: "postgresql://localhost:5432/myapp"
+  log_level: "info"
+  nginx.conf: |
+    server {
+        listen 80;
+        location / {
+            proxy_pass http://backend:3000;
+        }
+    }
+---
+# secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+data:
+  username: YWRtaW4=  # base64 encoded 'admin'
+  password: cGFzc3dvcmQ=  # base64 encoded 'password'
+```
+
+#### Complete Application Example:
+```yaml
+# web-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+      - name: web-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: database_url
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: password
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-service
+spec:
+  selector:
+    app: web-app
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
+```
+
+#### Kubernetes Commands Cheat Sheet:
+```bash
+# Cluster management
+kubectl cluster-info
+kubectl get nodes
+kubectl get namespaces
+
+# Pod management
+kubectl get pods -o wide
+kubectl describe pod <pod-name>
+kubectl logs <pod-name> -f
+kubectl exec -it <pod-name> -- /bin/bash
+
+# Deployment management
+kubectl get deployments
+kubectl scale deployment nginx-deployment --replicas=5
+kubectl rollout status deployment/nginx-deployment
+kubectl rollout history deployment/nginx-deployment
+kubectl rollout undo deployment/nginx-deployment
+
+# Service management
+kubectl get services
+kubectl expose deployment nginx-deployment --port=80 --type=LoadBalancer
+
+# Resource management
+kubectl apply -f .
+kubectl delete -f deployment.yaml
+kubectl get all
+```
+
+**Tasks:**
+- [ ] Install kubectl and minikube
+- [ ] Deploy the nginx pod and deployment above
+- [ ] Create services and test connectivity
+- [ ] Practice with ConfigMaps and Secrets
+
+### Day 5: Infrastructure Automation & Monitoring
+
+#### Infrastructure Automation with Terraform Modules:
+Modules make Terraform code reusable, maintainable, and follow DRY principles. Essential for managing infrastructure at scale.
+
+#### Creating Terraform Modules:
+```hcl
+# modules/vpc/main.tf
+variable "cidr_block" {
+  description = "CIDR block for VPC"
+  type        = string
+}
+
+variable "availability_zones" {
+  description = "List of availability zones"
+  type        = list(string)
+}
+
+variable "public_subnets" {
+  description = "List of public subnet CIDR blocks"
+  type        = list(string)
+}
+
+variable "private_subnets" {
+  description = "List of private subnet CIDR blocks"
+  type        = list(string)
+}
+
+# VPC
+resource "aws_vpc" "main" {
+  cidr_block           = var.cidr_block
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = {
+    Name = "main-vpc"
+  }
+}
+
+# Internet Gateway
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-igw"
+  }
+}
+
+# Public Subnets
+resource "aws_subnet" "public" {
+  count = length(var.public_subnets)
+
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnets[count.index]
+  availability_zone       = var.availability_zones[count.index]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-${count.index + 1}"
+    Type = "public"
+  }
+}
+
+# Private Subnets
+resource "aws_subnet" "private" {
+  count = length(var.private_subnets)
+
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnets[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = {
+    Name = "private-subnet-${count.index + 1}"
+    Type = "private"
+  }
+}
+
+# NAT Gateway
+resource "aws_eip" "nat" {
+  count = length(var.public_subnets)
+  domain = "vpc"
+
+  tags = {
+    Name = "nat-eip-${count.index + 1}"
+  }
+}
+
+resource "aws_nat_gateway" "main" {
+  count = length(var.public_subnets)
+
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  tags = {
+    Name = "nat-gateway-${count.index + 1}"
+  }
+}
+
+# Route Tables
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "public-rt"
+  }
+}
+
+resource "aws_route_table" "private" {
+  count = length(var.private_subnets)
+
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main[count.index].id
+  }
+
+  tags = {
+    Name = "private-rt-${count.index + 1}"
+  }
+}
+
+# Route Table Associations
+resource "aws_route_table_association" "public" {
+  count = length(var.public_subnets)
+
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "private" {
+  count = length(var.private_subnets)
+
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private[count.index].id
+}
+```
+
+#### Module Outputs:
+```hcl
+# modules/vpc/outputs.tf
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = aws_vpc.main.id
+}
+
+output "public_subnet_ids" {
+  description = "IDs of the public subnets"
+  value       = aws_subnet.public[*].id
+}
+
+output "private_subnet_ids" {
+  description = "IDs of the private subnets"
+  value       = aws_subnet.private[*].id
+}
+
+output "internet_gateway_id" {
+  description = "ID of the Internet Gateway"
+  value       = aws_internet_gateway.main.id
+}
+```
+
+#### Using Modules in Main Configuration:
+```hcl
+# main.tf
+terraform {
+  required_version = ">= 1.0"
+  
+  backend "s3" {
+    bucket = "my-terraform-state"
+    key    = "infrastructure/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+# Use VPC module
+module "vpc" {
+  source = "./modules/vpc"
+
+  cidr_block         = "10.0.0.0/16"
+  availability_zones = ["us-east-1a", "us-east-1b"]
+  public_subnets     = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets    = ["10.0.11.0/24", "10.0.12.0/24"]
+}
+
+# EKS Cluster using the VPC
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_name = "my-cluster"
+  vpc_id       = module.vpc.vpc_id
+  subnet_ids   = module.vpc.private_subnet_ids
+
+  node_groups = {
+    main = {
+      desired_capacity = 2
+      max_capacity     = 5
+      min_capacity     = 1
+      instance_types   = ["t3.medium"]
+    }
+  }
+}
+```
+
+#### Remote State Management:
+```hcl
+# backend.tf
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-bucket"
+    key            = "prod/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-locks"
+  }
+}
+
+# Create S3 bucket for state
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "terraform-state-bucket"
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# DynamoDB table for state locking
+resource "aws_dynamodb_table" "terraform_locks" {
+  name           = "terraform-locks"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+```
+
+#### Infrastructure Monitoring Setup:
+```hcl
+# monitoring.tf
+# CloudWatch Dashboard
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "Infrastructure-Dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "metric"
+        x      = 0
+        y      = 0
+        width  = 12
+        height = 6
+
+        properties = {
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "InstanceId", aws_instance.web.id],
+            [".", "NetworkIn", ".", "."],
+            [".", "NetworkOut", ".", "."]
+          ]
+          view    = "timeSeries"
+          stacked = false
+          region  = "us-east-1"
+          title   = "EC2 Instance Metrics"
+          period  = 300
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 6
+        width  = 12
+        height = 6
+
+        properties = {
+          metrics = [
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", aws_lb.main.arn_suffix],
+            [".", "TargetResponseTime", ".", "."]
+          ]
+          view   = "timeSeries"
+          region = "us-east-1"
+          title  = "Load Balancer Metrics"
+        }
+      }
+    ]
+  })
+}
+
+# SNS Topic for alerts
+resource "aws_sns_topic" "alerts" {
+  name = "infrastructure-alerts"
+}
+
+resource "aws_sns_topic_subscription" "email" {
+  topic_arn = aws_sns_topic.alerts.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
+}
+
+# CloudWatch Alarms
+resource "aws_cloudwatch_metric_alarm" "high_cpu" {
+  alarm_name          = "high-cpu-utilization"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "This metric monitors ec2 cpu utilization"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    InstanceId = aws_instance.web.id
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "elb_response_time" {
+  alarm_name          = "high-response-time"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "TargetResponseTime"
+  namespace           = "AWS/ApplicationELB"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "1"
+  alarm_description   = "This metric monitors ALB response time"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    LoadBalancer = aws_lb.main.arn_suffix
+  }
+}
+```
+
+#### Terraform Workspace Management:
+```bash
+# Create and manage workspaces for different environments
+terraform workspace new dev
+terraform workspace new staging
+terraform workspace new prod
+
+# List workspaces
+terraform workspace list
+
+# Switch workspace
+terraform workspace select prod
+
+# Use workspace in configuration
+locals {
+  environment = terraform.workspace
+  
+  instance_counts = {
+    dev     = 1
+    staging = 2
+    prod    = 3
+  }
+}
+
+resource "aws_instance" "web" {
+  count = local.instance_counts[local.environment]
+  # ... rest of configuration
+}
+```
+
+#### Infrastructure Testing:
+```bash
+#!/bin/bash
+# test-infrastructure.sh
+
+# Test VPC connectivity
+echo "Testing VPC connectivity..."
+aws ec2 describe-vpcs --vpc-ids $(terraform output -raw vpc_id)
+
+# Test instance health
+echo "Testing instance health..."
+INSTANCE_ID=$(terraform output -raw instance_id)
+aws ec2 describe-instance-status --instance-ids $INSTANCE_ID
+
+# Test load balancer
+echo "Testing load balancer..."
+LB_DNS=$(terraform output -raw load_balancer_dns)
+curl -f http://$LB_DNS/health || echo "Health check failed"
+
+# Test database connectivity
+echo "Testing database connectivity..."
+DB_ENDPOINT=$(terraform output -raw db_endpoint)
+nc -zv $DB_ENDPOINT 3306
+
+echo "Infrastructure tests completed"
+```
+
+#### Automated Infrastructure Deployment:
+```yaml
+# .github/workflows/infrastructure.yml
+name: Infrastructure Deployment
+
+on:
+  push:
+    paths:
+      - 'terraform/**'
+    branches: [main]
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.0
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform
+    
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./terraform
+    
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+      working-directory: ./terraform
+    
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply tfplan
+      working-directory: ./terraform
+    
+    - name: Test Infrastructure
+      run: ./test-infrastructure.sh
+      working-directory: ./terraform
+```
+
+**Tasks:**
+- [ ] Create VPC module with the code above
+- [ ] Set up remote state with S3 and DynamoDB
+- [ ] Deploy EKS cluster using modules
+- [ ] Configure CloudWatch monitoring and alerts
 
 ## Hands-on Lab: Deploy 3-Tier Architecture
 
